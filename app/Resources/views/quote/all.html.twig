@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% import 'macros/forms.html.twig' as forms %}
+
+{% block body %}
+<div class="panel panel-primary">
+    <header class="panel-heading">
+        <div class="text-center xt-heading-top">
+            <a class="back-to-search" href="{{ path('bash') }}">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                {{ msg('back') }}
+            </a>
+            {{ msg('all-quotes') }}
+        </div>
+    </header>
+
+    <div class="panel-body xt-panel-body">
+        <ul>
+            {% for quote in quotes %}
+                <div>
+                    <a class="lead" href="{{ path("quoteID", {"id": loop.index0}) }}">#{{ loop.index0 }}</a>
+                    <blockquote class="inline-block">{{ quote }}</blockquote>
+                </div>
+            {% endfor %}
+        </ul>
+        <a class="btn btn-primary form-submit" href="{{ path('bashRandom') }}">{{ msg("quote-random") }}</a>
+    </div>
+</div>
+{% endblock %}

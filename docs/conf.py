@@ -5,14 +5,16 @@
 source_suffix = '.rst'
 master_doc = 'index'
 
-project = u'xTools'
-copyright = u'2008-2016, xTools Maintainers'
+project = u'XTools'
 
-version = '0.1.2'
+# The release process is documented at https://xtools.readthedocs.io/en/latest/development.html#releases
+copyright = u'2008–2018, XTools contributors'
+version = '3.1'
+release = '3.1.38'
 
 # -- Options for HTML output ---------------------------------------------------
 
-# html_theme = 'dotted'
+html_theme = 'sphinx_rtd_theme'
 
 # -- HTML theme options for `dotted` style -------------------------------------
 

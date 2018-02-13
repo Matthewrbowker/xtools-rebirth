@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="panel panel-primary">
+    <header class="panel-heading">
+        <div class="text-center xt-heading-top">
+            <a class="back-to-search" href="{{ path('bash') }}">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                {{ msg('back') }}
+            </a>
+            {{ msg('quote') }} #{{ id }}
+        </div>
+    </header>
+    <div class="panel-body xt-panel-body">
+        <blockquote>
+            {{ text }}
+        </blockquote>
+
+        <div>
+            <a class="btn btn-primary form-submit" href="{{ path('bashRandom') }}">{{ msg("quote-random") }}</a>
+            <a class="btn btn-primary form-submit" href="{{ path('bashAll') }}">{{ msg("quote-show-all") }}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends is_sub_request ? 'subrequest.html.twig' : 'base.html.twig' %}
+{% import 'macros/wiki.html.twig' as wiki %}
+
+{% block body %}
+
+{% if not is_sub_request %}
+    <div class="panel panel-primary">
+        <header class="panel-heading">
+            <div class="text-center xt-heading-top">
+                <a class="back-to-search" href="{{ path('ec') }}">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    {{ msg('back') }}
+                </a>
+                {{ wiki.userLink(user, project) }}
+                <small> &bull; {{ project.title }} </small>
+            </div>
+        </header>
+        <div class="panel-body xt-panel-body">
+            <section class="panel panel-default clearfix">
+                <header class="panel-heading col-lg-12">
+                    <h4>
+                        {{ msg('timecard') }}
+                        <span class='pull-right text-muted xt-panel-description'>
+                            {{ layout.downloadLink('EditCounterTimecard', {project:project.domain, username:user.username}, ['wikitext']) }}
+                        </span>
+                    </h4>
+                </header>
+                <div class="panel-body col-lg-12">
+{% endif %}
+
+{% if not project.userHasOptedIn(user) %}
+<div class="alert alert-info">
+    <p>{{ msg('not-opted-in', [ wiki.pageLink(opted_in_page) ] ) }}</p>
+</div>
+{% else %}
+
+<canvas id="timecard-bubble-chart"></canvas>
+
+<script type="text/javascript">
+    // MySQL uses ODBC standard, treating the first day (1) as Sunday
+    var days = {
+        1: "{{ msg('sunday') }}",
+        2: "{{ msg('monday') }}",
+        3: "{{ msg('tuesday') }}",
+        4: "{{ msg('wednesday') }}",
+        5: "{{ msg('thursday') }}",
+        6: "{{ msg('friday') }}",
+        7: "{{ msg('saturday') }}"
+    };
+    var timeCardDatasets = [];
+    {% for i in 0..7 %}
+        timeCardDatasets.push({
+            label: "{{ msg('total') }}",
+            backgroundColor: "{{ chartColor(i) }}",
+            data: [],
+        });
+    {% endfor %}
+
+    {##
+     # Here we find the max value for midnight (leftmost column),
+     # which we can then use to fine-tune the offset of the bubbles
+     # to ensure they don't overlap the labels. This isn't 100%
+     # fool-proof but it does help.
+     #}
+    {% set maxMidnight = 0 %}
+    {% for data in ec.timeCard if data.x != 24 %}
+        {% if data.x == 0 and data.value > maxMidnight %}
+            {% set maxMidnight = maxMidnight + data.value %}
+        {% endif %}
+        {% set datasetIndex = data.y - 1 %}
+        var entry = {{ data|json_encode|raw }};
+        entry.y = Math.abs(8 - entry.y);
+        timeCardDatasets[{{ datasetIndex }}].data.push(entry);
+    {% endfor %}
+
+    new Chart($("#timecard-bubble-chart"), {
+        type: 'bubble',
+        data: {
+            datasets: timeCardDatasets
+        },
+        options: {
+            legend: {
+                display: false,
+            },
+            elements: {
+                point: {
+                    radius: function(context) {
+                        var index = context.dataIndex;
+                        var data = context.dataset.data[index];
+                        var size = context.chart.width;
+                        var base = data.value / 100;
+                        return (size / 40) * base;
+                    }
+                }
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0,
+                        max: 8,
+                        padding: {{ maxMidnight }} * 0.4,
+                        callback: function(value, index, values) {
+                            return days[index];
+                        }
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        min: 0,
+                        max: 23,
+                        stepSize: 2,
+                        callback: function(value, index, values) {
+                            if (value % 2 === 0) {
+                                return value + ":00";
+                            }
+                        }
+                    }
+                }]
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(item) {
+                        // yLabels are reversed, and zero-indexed
+                        return days[7 - item.yLabel + 1] + ' ' + item.xLabel + ':00';
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+<div class="text-muted times-in-utc" style="clear:both">
+    {{ msg('times-in-utc') }}
+</div>
+
+{% endif %}
+
+{% if not is_sub_request %}
+    </div></section></div></div>
+{% endif %}
+
+{% endblock %}

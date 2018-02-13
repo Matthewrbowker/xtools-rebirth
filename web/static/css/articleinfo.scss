@@ -1,0 +1,110 @@
+@import 'mixins.scss';
+
+.articleinfo {
+    .top-editors-charts {
+        display: block;
+        margin-bottom: 25px;
+        position: relative;
+
+        canvas {
+            max-height: 250px;
+            max-width: 250px;
+        }
+    }
+
+    .year-count-charts {
+        clear: both;
+        display: block;
+        margin-bottom: 25px;
+        position: relative;
+
+        canvas {
+            max-width: 800px;
+        }
+    }
+
+    .chart-wrapper {
+        display: flex;
+        float: left;
+        margin-right: 50px;
+    }
+
+    .chart-title {
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .chart-legend {
+        align-self: center;
+        margin-left: 15px;
+
+        .color-icon {
+            vertical-align: -4px;
+        }
+    }
+
+    .legend-label {
+        display: inline-block;
+        max-width: 200px;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+    }
+
+    .legend-value {
+        vertical-align: bottom;
+    }
+
+    .top-editors-table {
+        margin-bottom: 0;
+    }
+
+    .footnotes {
+        margin-bottom: 20px;
+        margin-top: 5px;
+    }
+
+    .month-counts-table {
+        .stripes-column {
+            // effectively sets a min-height, but allows .strips to have percentage height
+            height: 30px;
+            padding: 0;
+        }
+
+        .stripes {
+            height: calc(100% / 3);
+        }
+    }
+
+    .sort-entry--assessment,
+    .sort-entry--importance {
+        font-weight: bold;
+        text-align: center;
+
+        a {
+            color: #4365cc;
+        }
+    }
+
+    .bugs-table .sort-entry--explanation {
+        min-width: 400px;
+        white-space: pre-wrap;
+    }
+
+    .authorship-desc {
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: $bootstrap-sm) {
+    .articleinfo {
+        #year_count_legend {
+            margin: 0;
+
+            .legend-body > div {
+                display: inline;
+                margin-right: 10px;
+            }
+        }
+    }
+}

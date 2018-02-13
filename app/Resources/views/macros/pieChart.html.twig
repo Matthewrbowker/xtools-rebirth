@@ -1,0 +1,58 @@
+{% macro pie_chart(id, data, legend = true, classes = '') %}
+{% set labels = [] %}
+{% set values = [] %}
+{% set colors = [] %}
+<div class="chart-wrapper {{ classes }}">
+    <canvas id="{{ id }}"></canvas>
+    <span class="chart-legend" id="{{ id }}_legend">
+        <div class="legend-body">
+            {% for entry in data %}
+                {% set labels = labels | merge([entry.label]) %}
+                {% set values = values | merge([entry.value]) %}
+                {% set colors = colors | merge([chartColor(loop.index0)]) %}
+                {% if legend %}
+                <div>
+                    <span class="color-icon" style="background:{{ chartColor(loop.index0) }}"></span>
+                    <span class="legend-label">{{ entry.label }}</span>
+                    <span class="legend-value">
+                        &middot;
+                        {{ entry.value|num_format }} ({{ entry.percentage|percent_format }})
+                    </span>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </span>
+</div>
+<script type="text/javascript">
+    $(function() {
+        window["{{ id }}"] = new Chart($("#{{ id }}"), {
+            type: 'pie',
+            data: {
+                labels: {{ labels | json_encode() | raw }},
+                datasets: [{
+                    data: {{ values | json_encode() | raw }},
+                    backgroundColor: {{ colors | json_encode() | raw }},
+                    hoverBackgroundColor: {{ colors | json_encode() | raw }},
+                }],
+            },
+            options: {
+                responsive: false,
+                aspectRatio: 1,
+                legend: {
+                    display: false,
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, chartInstance) {
+                            var value = chartInstance.datasets[tooltipItem.datasetIndex].data[tooltipItem.index],
+                                label = chartInstance.labels[tooltipItem.index];
+                            return label + ': ' + value.toLocaleString();
+                        }
+                    }
+                }
+            },
+        });
+    });
+</script>
+{% endmacro %}

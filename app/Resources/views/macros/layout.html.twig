@@ -1,0 +1,81 @@
+{#
+ # Generate a collapsible Bootstrap .panel with a heading
+ # @param string title       - i18n message that is the title of the content block, shown in a header
+ # @param string content     - raw content to show in the section body
+ # @param string description - shown on the right in grayed text
+ # @param string id          - id of the section, defaults to the title
+ # @param bool   notranslate - don't translate the 'title'
+ #}
+{% macro content_block(title, content, description, id = null, notranslate = false, toggle = true) %}
+    {% if id is null %}
+        {% set id = title %}
+    {% endif %}
+    <section class="panel panel-default clearfix" id="{{ id }}">
+        <header class="panel-heading col-lg-12">
+            <h4>
+                {% if notranslate %}
+                    {{ title }}
+                {% else %}
+                    {{ msg(title) }}
+                {% endif %}
+                {% if toggle %}
+                    <small class='xt-show'>[{{ msg('show') | lower }}]</small>
+                    <small class='xt-hide'>[{{ msg('hide') | lower }}]</small>
+                {% endif %}
+                {% if description is defined %}
+                    <span class='pull-right text-muted xt-panel-description'>{{ description }}</span>
+                {% endif %}
+            </h4>
+        </header>
+        <div class="panel-body col-lg-12">{{ content }}</div>
+    </section>
+{% endmacro %}
+
+{#
+ # Use standard heading that goes at the top of a tool that relates to a single user.
+ # @param User user
+ # @param Project project
+ # @param string tool The current tool that is being used.
+ #}
+{% macro userHeading(user, project, tool) %}
+    {% import 'macros/wiki.html.twig' as wiki %}
+    <header class="panel-heading">
+        <div class="text-center xt-heading-top">
+            <a class="back-to-search" href="{{ path(tool) }}">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                {{ msg('back') }}
+            </a>
+            {{ wiki.userLink(user, project) }}
+            <small>
+                &bull;
+                {{ project.title }}
+            </small>
+        </div>
+    </header>
+{% endmacro %}
+
+{% macro alert(style, text, textParams) %}
+    <p class="alert alert-{{ style }} alert-dismissable xt-alert{% if style == 'danger' %} strong{% endif %}" role="alert">
+        <button class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{ msgPrintExists(text, textParams) }}
+    </p>
+{% endmacro %}
+
+{% macro downloadLink(path, params, types = ['wikitext', 'csv', 'json', 'png']) %}
+    <div class="btn-group download-dropdown dropdown">
+        <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="glyphicon glyphicon-download-alt"></span>
+            {{ msg('download-label') }}
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right">
+            {% for type in types %}
+                <li>
+                    <a target="_blank" class="download-link download-{{ type|lower }}" href="{{ path(path, params|merge({format: type})) }}">{{ msg(type) }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endmacro %}

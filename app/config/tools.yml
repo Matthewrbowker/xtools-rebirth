@@ -4,13 +4,12 @@ parameters:
     articleinfo: articleinfo
     pages: pages
     topedits: topedits
-    rangecontribs: rangecontribs
     blame: blame
     autoedits: autoedits
-    autoblock: autoblock
     adminstats: adminstats
     adminscore: adminscore
-    rfa: rfa
-    rfap: rfap
+    es: es
+    rfx: rfx
+    rfxvote: rfxvote
     bash: bash
     sc: sc
